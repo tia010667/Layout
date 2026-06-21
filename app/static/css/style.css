@@ -1,0 +1,626 @@
+/* ============================================
+   FormatAI — Academic Modern Design
+   Navy + Cream + Gold · Serif + Sans
+   ============================================ */
+
+:root {
+  --navy: #1B2A4A;
+  --navy-light: #2D4263;
+  --cream: #FFFDF7;
+  --cream-dark: #F5F0E8;
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --green: #4A7C59;
+  --green-light: #6BA37A;
+  --red: #C0392B;
+  --red-light: #FDE8E8;
+
+  --text: #1a1a2e;
+  --text-secondary: #5D6D7E;
+  --text-muted: #95A5A6;
+  --border: #E2DED6;
+  --border-light: #F0EDE6;
+  --surface: #FFFFFF;
+  --bg: #FFFDF7;
+
+  --shadow-sm: 0 1px 3px rgba(27,42,74,0.06);
+  --shadow-md: 0 4px 12px rgba(27,42,74,0.08);
+  --shadow-lg: 0 12px 40px rgba(27,42,74,0.10);
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  --font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.app-header {
+  background: var(--navy);
+  color: #fff;
+  border-bottom: 3px solid var(--gold);
+  padding: 0 24px;
+}
+
+.header-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.app-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-icon {
+  color: var(--gold);
+  font-size: 1.5rem;
+}
+
+.app-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  padding-left: 16px;
+  border-left: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ============================================================
+   Steps Bar
+   ============================================================ */
+.steps-bar {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px;
+  gap: 0;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.4;
+  transition: all var(--transition);
+}
+
+.step-indicator.active {
+  opacity: 1;
+}
+
+.step-indicator.completed {
+  opacity: 0.7;
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.step-indicator.active .step-num {
+  background: var(--navy);
+  color: #fff;
+}
+
+.step-indicator.completed .step-num {
+  background: var(--green);
+  color: #fff;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.step-indicator.active .step-label {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.step-connector {
+  width: 40px;
+  height: 2px;
+  background: var(--border);
+  margin: 0 12px;
+  transition: background var(--transition);
+}
+
+.step-indicator.completed + .step-connector {
+  background: var(--green);
+}
+
+/* ============================================================
+   Main Content
+   ============================================================ */
+.app-main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ============================================================
+   Cards (Unified)
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+  animation: fadeSlideIn 0.4s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-badge.done {
+  background: var(--green);
+}
+
+.card-header h2 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* ============================================================
+   Upload Grid
+   ============================================================ */
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 700px) {
+  .upload-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- Drop Zones ---- */
+.drop-zone {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.drop-zone:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+}
+
+.drop-zone.drag-over {
+  border-color: var(--navy);
+  background: #F5F7FB;
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.01);
+}
+
+.drop-zone.has-file {
+  border-style: solid;
+  border-color: var(--green);
+  background: #F9FCF9;
+}
+
+.drop-icon {
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.drop-zone:hover .drop-icon {
+  color: var(--gold);
+}
+
+.drop-zone.has-file .drop-icon {
+  color: var(--green);
+}
+
+.drop-label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+
+.drop-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ---- Choose file button ---- */
+.btn-choose {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--navy);
+  background: transparent;
+  border: 1.5px solid var(--navy);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-choose:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* ============================================================
+   File Info Tags
+   ============================================================ */
+.file-info {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.file-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #F9FCF9;
+  border: 1px solid var(--green-light);
+  border-radius: 24px;
+  font-size: 0.85rem;
+  color: var(--green);
+}
+
+.tag-icon {
+  font-size: 1.1rem;
+}
+
+.tag-name {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.tag-remove {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: var(--red-light);
+  color: var(--red);
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  line-height: 1;
+}
+
+.tag-remove:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.step-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: #fff;
+  background: var(--navy);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--navy-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--navy);
+  background: var(--surface);
+  border: 1.5px solid var(--navy);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-secondary:hover {
+  background: #F5F7FB;
+}
+
+.btn-large {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+/* ============================================================
+   Progress
+   ============================================================ */
+.progress-container {
+  margin-top: 28px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-light);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--navy), var(--green));
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+.progress-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.stage {
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all var(--transition);
+  font-weight: 500;
+}
+
+.stage.active {
+  color: var(--navy);
+  font-weight: 600;
+  background: #EBF0F7;
+}
+
+.stage.done {
+  color: var(--green);
+}
+
+.stage-arrow {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  min-height: 24px;
+}
+
+/* ============================================================
+   Error Banner
+   ============================================================ */
+.error-banner {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  margin-top: 20px;
+  background: var(--red-light);
+  border: 1px solid #f5c6cb;
+  border-radius: var(--radius-sm);
+}
+
+.error-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.error-content {
+  flex: 1;
+}
+
+.error-title {
+  font-weight: 600;
+  color: var(--red);
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.error-message {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Result Section
+   ============================================================ */
+.result-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ---- Preview Pane ---- */
+.preview-pane {
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--cream-dark);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--navy);
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color var(--transition);
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.btn-close:hover {
+  color: var(--red);
+}
+
+#preview-frame {
+  width: 100%;
+  height: 520px;
+  border: none;
+  background: #fff;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.app-footer {
+  text-align: center;
+  padding: 0 24px 40px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+.hidden {
+  display: none !important;
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FormatAI — 文档格式 AI 校验与一键排版</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ====== Header ====== -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">
+                <span class="title-icon">📄</span>
+                FormatAI
+            </h1>
+            <p class="app-subtitle">文档格式 AI 校验与一键排版</p>
+        </div>
+    </header>
+
+    <!-- ====== Steps Indicator ====== -->
+    <nav class="steps-bar" id="stepsBar">
+        <div class="step-indicator active" data-step="1">
+            <span class="step-num">1</span>
+            <span class="step-label">上传文件</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-indicator" data-step="2">
+            <span class="step-num">2</span>
+            <span class="step-label">智能排版</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-indicator" data-step="3">
+            <span class="step-num">3</span>
+            <span class="step-label">预览下载</span>
+        </div>
+    </nav>
+
+    <!-- ====== Main Content ====== -->
+    <main class="app-main">
+
+        <!-- Step 1: Upload -->
+        <section id="upload-section" class="card">
+            <div class="card-header">
+                <span class="step-badge">1</span>
+                <h2>上传文件</h2>
+            </div>
+
+            <div class="upload-grid">
+                <!-- Template drop zone -->
+                <div id="template-zone" class="drop-zone" data-type="template">
+                    <div class="drop-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="6" width="32" height="36" rx="3" stroke="currentColor" stroke-width="2"/>
+                            <line x1="14" y1="16" x2="34" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="14" y1="22" x2="30" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="14" y1="28" x2="26" y2="28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="drop-label">标准格式模板</p>
+                    <p class="drop-hint">拖拽 .docx 或 .pdf 文件到此处</p>
+                    <input type="file" id="template-input" accept=".docx,.pdf" hidden>
+                    <button class="btn-choose" data-for="template-input">或点击选择文件</button>
+                </div>
+
+                <!-- Content drop zone -->
+                <div id="content-zone" class="drop-zone" data-type="content">
+                    <div class="drop-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="6" width="32" height="36" rx="3" stroke="currentColor" stroke-width="2"/>
+                            <line x1="14" y1="16" x2="34" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="14" y1="21" x2="34" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="14" y1="26" x2="30" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="14" y1="31" x2="26" y2="31" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="14" y1="36" x2="34" y2="36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="drop-label">待排版内容文件</p>
+                    <p class="drop-hint">拖拽 .docx 文件到此处</p>
+                    <input type="file" id="content-input" accept=".docx" hidden>
+                    <button class="btn-choose" data-for="content-input">或点击选择文件</button>
+                </div>
+            </div>
+
+            <!-- File info tags -->
+            <div id="file-info" class="file-info hidden">
+                <div id="template-tag" class="file-tag hidden">
+                    <span class="tag-icon">📋</span>
+                    <span class="tag-name"></span>
+                    <button class="tag-remove" data-type="template">✕</button>
+                </div>
+                <div id="content-tag" class="file-tag hidden">
+                    <span class="tag-icon">📝</span>
+                    <span class="tag-name"></span>
+                    <button class="tag-remove" data-type="content">✕</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Process -->
+        <section id="process-section" class="card hidden">
+            <div class="card-header">
+                <span class="step-badge">2</span>
+                <h2>智能排版</h2>
+            </div>
+
+            <button id="btn-process" class="btn-primary btn-large">
+                ⚡ 开始智能排版
+            </button>
+
+            <!-- Progress -->
+            <div id="progress-container" class="progress-container hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-stages" id="progress-stages">
+                    <span data-stage="parsing_template" class="stage">解析模板</span>
+                    <span class="stage-arrow">→</span>
+                    <span data-stage="analyzing_content" class="stage">分析内容</span>
+                    <span class="stage-arrow">→</span>
+                    <span data-stage="matching_styles" class="stage">AI 匹配样式</span>
+                    <span class="stage-arrow">→</span>
+                    <span data-stage="verifying" class="stage">校验格式</span>
+                    <span class="stage-arrow">→</span>
+                    <span data-stage="generating_docx" class="stage">生成文档</span>
+                </div>
+                <p id="progress-text" class="progress-text"></p>
+            </div>
+
+            <!-- Error display -->
+            <div id="error-banner" class="error-banner hidden">
+                <span class="error-icon">⚠️</span>
+                <div class="error-content">
+                    <p class="error-title">排版失败</p>
+                    <p id="error-message" class="error-message"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Results -->
+        <section id="result-section" class="card hidden">
+            <div class="card-header">
+                <span class="step-badge done">✓</span>
+                <h2>排版完成</h2>
+            </div>
+
+            <div class="result-actions">
+                <button id="btn-preview" class="btn-secondary">
+                    👁 预览文档
+                </button>
+                <button id="btn-download" class="btn-primary">
+                    ⬇ 下载 .docx
+                </button>
+            </div>
+
+            <div id="preview-pane" class="preview-pane hidden">
+                <div class="preview-header">
+                    <span>文档预览</span>
+                    <button id="btn-close-preview" class="btn-close">✕</button>
+                </div>
+                <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="app-footer">
+        <p>FormatAI — 不写新内容，不改原文，只做格式</p>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[project]
+name = "formatai"
+version = "1.0.0"
+description = "AI Agent for document formatting validation and automatic typesetting"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

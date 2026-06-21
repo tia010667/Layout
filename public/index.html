@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文档格式 AI 校验与排版助手</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ====== 顶部导航 ====== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="4" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2"/>
+          <line x1="8" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="8" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="8" y1="18" x2="16" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">FormatAI</span>
+      </div>
+      <div class="header-subtitle">文档格式校验与一键排版</div>
+    </div>
+  </header>
+
+  <!-- ====== 步骤指示器 ====== -->
+  <nav class="steps-bar" id="stepsBar">
+    <div class="step active" data-step="1">
+      <span class="step-num">1</span>
+      <span class="step-label">上传文件</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" data-step="2">
+      <span class="step-num">2</span>
+      <span class="step-label">智能排版</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" data-step="3">
+      <span class="step-num">3</span>
+      <span class="step-label">预览下载</span>
+    </div>
+  </nav>
+
+  <!-- ====== 主内容区 ====== -->
+  <main class="main-content">
+
+    <!-- ===== Step 1: 上传文件 ===== -->
+    <section class="step-panel active" id="step1">
+      <div class="step-header">
+        <h2>📤 上传文件</h2>
+        <p>请上传一份标准格式模板和一份需要排版的内容文件</p>
+      </div>
+
+      <div class="upload-grid">
+        <!-- 模板文件 -->
+        <div class="upload-card" id="templateCard">
+          <div class="upload-zone" id="templateZone">
+            <input type="file" id="templateInput" accept=".docx,.pdf" hidden>
+            <div class="upload-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M16 22l8-8 8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="upload-text">
+              <strong>标准格式模板</strong>
+              <span>拖拽 .docx 或 .pdf 文件到此处</span>
+              <span class="upload-hint">或点击选择文件</span>
+            </div>
+          </div>
+          <div class="file-info" id="templateInfo" style="display:none">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <span class="file-name" id="templateName"></span>
+              <span class="file-size" id="templateSize"></span>
+            </div>
+            <button class="file-remove" id="templateRemove" title="移除">✕</button>
+          </div>
+          <div class="upload-status" id="templateStatus"></div>
+        </div>
+
+        <!-- 内容文件 -->
+        <div class="upload-card" id="contentCard">
+          <div class="upload-zone" id="contentZone">
+            <input type="file" id="contentInput" accept=".docx,.pdf" hidden>
+            <div class="upload-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2.5"/>
+                <line x1="14" y1="18" x2="34" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="14" y1="24" x2="30" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="14" y1="30" x2="26" y2="30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="upload-text">
+              <strong>待排版内容文件</strong>
+              <span>拖拽 .docx 或 .pdf 文件到此处</span>
+              <span class="upload-hint">或点击选择文件</span>
+            </div>
+          </div>
+          <div class="file-info" id="contentInfo" style="display:none">
+            <div class="file-icon">📝</div>
+            <div class="file-details">
+              <span class="file-name" id="contentName"></span>
+              <span class="file-size" id="contentSize"></span>
+            </div>
+            <button class="file-remove" id="contentRemove" title="移除">✕</button>
+          </div>
+          <div class="upload-status" id="contentStatus"></div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-primary" id="toStep2" disabled>开始智能排版 →</button>
+      </div>
+    </section>
+
+    <!-- ===== Step 2: 处理中 ===== -->
+    <section class="step-panel" id="step2">
+      <div class="step-header">
+        <h2>🤖 AI 正在分析排版...</h2>
+        <p>正在分析模板格式、匹配内容结构、生成规范文档</p>
+      </div>
+
+      <div class="process-card">
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-stages">
+          <div class="progress-stage" id="stage1">
+            <span class="stage-icon">⏳</span>
+            <span class="stage-text">解析模板格式</span>
+          </div>
+          <div class="progress-stage" id="stage2">
+            <span class="stage-icon">○</span>
+            <span class="stage-text">分析内容结构</span>
+          </div>
+          <div class="progress-stage" id="stage3">
+            <span class="stage-icon">○</span>
+            <span class="stage-text">AI 智能匹配</span>
+          </div>
+          <div class="progress-stage" id="stage4">
+            <span class="stage-icon">○</span>
+            <span class="stage-text">生成规范文档</span>
+          </div>
+        </div>
+        <div class="process-error" id="processError" style="display:none"></div>
+        <div class="process-log" id="processLog"></div>
+      </div>
+
+      <div class="step-actions" style="display:none" id="processActions">
+        <button class="btn btn-ghost" id="backToStep1FromProcess">← 返回重新上传</button>
+        <button class="btn btn-outline" id="retryProcess">🔄 重试</button>
+      </div>
+    </section>
+
+    <!-- ===== Step 3: 预览与下载 ===== -->
+    <section class="step-panel" id="step3">
+      <div class="step-header">
+        <h2>✅ 排版完成</h2>
+        <p>AI 已完成格式校验与排版，请预览效果并下载</p>
+      </div>
+
+      <div class="result-card">
+        <!-- 格式变更摘要 -->
+        <div class="format-summary" id="formatSummary">
+          <h3>📋 格式变更摘要</h3>
+          <div class="summary-list" id="summaryList"></div>
+        </div>
+
+        <!-- 文档预览 -->
+        <div class="preview-panel">
+          <h3>📄 排版预览</h3>
+          <div class="preview-container" id="previewContainer">
+            <div class="preview-loading">正在生成预览...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-ghost" id="startOver">← 重新开始</button>
+        <button class="btn btn-primary" id="downloadDocx">
+          <span class="btn-icon">⬇️</span> 下载 .docx 文件
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====== Toast 通知容器 ====== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

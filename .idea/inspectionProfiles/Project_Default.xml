@@ -1,0 +1,33 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="10">
+            <item index="0" class="java.lang.String" itemvalue="werkzeug" />
+            <item index="1" class="java.lang.String" itemvalue="python-docx" />
+            <item index="2" class="java.lang.String" itemvalue="celery" />
+            <item index="3" class="java.lang.String" itemvalue="langchain" />
+            <item index="4" class="java.lang.String" itemvalue="flask-sqlalchemy" />
+            <item index="5" class="java.lang.String" itemvalue="python-dotenv" />
+            <item index="6" class="java.lang.String" itemvalue="PyPDF2" />
+            <item index="7" class="java.lang.String" itemvalue="python-multipart" />
+            <item index="8" class="java.lang.String" itemvalue="flask" />
+            <item index="9" class="java.lang.String" itemvalue="redis" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="读exal.*" />
+          <option value="int.*" />
+          <option value="main.*" />
+          <option value="calc_weights_1.strip_common_suffix" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

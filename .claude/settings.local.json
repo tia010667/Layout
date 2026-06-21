@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(mkdir -p \"D:/Layout/ppt/images\")",
+      "Bash(cp \"C:/Users/19174/.claude/skills/guizang-ppt-skill/assets/template-swiss.html\" \"D:/Layout/ppt/index.html\")",
+      "Bash(start *)",
+      "Bash(curl -s http://localhost:8000/static/css/style.css)"
+    ]
+  }
+}
