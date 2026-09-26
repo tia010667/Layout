@@ -21,6 +21,10 @@ class AgentState(TypedDict, total=False):
     template_analysis: Optional[dict]   # Format rules extracted from template
     content_structure: Optional[dict]   # Paragraph structure + semantic roles
 
+    # Document classification
+    document_mode: str                  # "copy" | "text_flow" | "table_form"
+    classification: Optional[dict]      # Full classification result (mode, reason, fingerprints)
+
     # LLM output
     style_mapping: Optional[dict]       # Content element → Template style mapping
 

@@ -9,7 +9,7 @@
 FormatAI 是一个**论文/报告格式自动排版工具**。用户只需提供两个文件：
 
 1. **格式模板**（`.docx`）—— 老师给的、或学校规定的格式样例文件
-2. **内容文件**（`.docx`）—— 你写好内容但格式还没调的草稿
+2. **内容文件**（`.docx` 或 `.md`）—— 你写好内容但格式还没调的草稿
 
 Agent 会自动把模板的格式（字体、字号、行距、缩进、对齐等）套用到你的内容上，生成一份格式规范的文档。**不写新内容，不改原文。**
 
@@ -84,7 +84,7 @@ LLM 只在 **`match_styles` 节点**被调用一次，负责完成**语义理解
 
 ## 三、Agent 架构
 
-项目基于 **LangGraph** 构建，使用 `StateGraph` 编排 6 个节点，支持条件路由和失败自愈重试。
+项目基于 **LangGraph** 构建，使用 `StateGraph` 编排 7 个节点，支持条件路由、文档类型自动识别和失败自愈重试。
 
 ### 流程图
 
@@ -98,16 +98,17 @@ parse_template ──── 解析模板 .docx，提取格式模板（format pro
 analyze_content ─── 解析内容 .docx，提取段落结构 + 语义角色
   │                 工具: content_analyzer (mammoth + python-docx)
   ▼
-match_styles ────── LLM 将内容段落匹配到格式模板  ★ 唯一调用 LLM 的节点
-  │                 工具: ChatOpenAI (structured output)
-  ▼
-verify_formatting ─ 校验映射结果（覆盖率、格式模板存在性、一致性）
-  │                 工具: schema_validator
+classify_document ─ 识别文档类型（copy / text_flow / table_form）
+  │                 工具: document_classifier (结构指纹比对)
   │
-  ├── 通过 ──────────→ generate_docx ──→ output ──→ END
+  ├── copy ─────────→ generate_docx（原样输出内容，跳过 LLM）──→ output ──→ END
   │
-  └── 不通过 ─────────→ (retry < 3?) ──→ 回到 match_styles (带错误反馈)
-                          └── (retry ≥ 3?) ──→ handle_error ──→ END
+  └── 其余 ─────────→ match_styles ──→ verify_formatting
+                          │
+                          ├── 通过 ──────────→ generate_docx ──→ output ──→ END
+                          │
+                          └── 不通过 ─────────→ (retry < 3?) ──→ 回到 match_styles (带错误反馈)
+                                                  └── (retry ≥ 3?) ──→ handle_error ──→ END
 ```
 
 ### 节点说明
@@ -116,10 +117,23 @@ verify_formatting ─ 校验映射结果（覆盖率、格式模板存在性、�
 |------|------|:---:|
 | `parse_template` | 读取模板的 `styles.xml` 和 `document.xml`，提取样式定义 + 段落直接格式，分组为格式模板 | 否 |
 | `analyze_content` | 解析内容文档，提取每个段落的文本、语义角色、当前样式 | 否 |
+| `classify_document` | 用结构指纹判断文档类型（copy / text_flow / table_form），决定走哪条生成路径 | 否 |
 | `match_styles` | 将内容段落匹配到格式模板，输出 `profile_id` 映射 | **是** |
 | `verify_formatting` | 校验映射的覆盖率、格式模板存在性、一致性；不通过则带反馈重试 | 否 |
-| `generate_docx` | 将格式模板的格式 XML 直接应用到内容段落，生成 .docx | 否 |
+| `generate_docx` | 将格式模板的格式 XML 直接应用到内容段落，生成 .docx（copy 模式下原样输出内容） | 否 |
 | `output` | 生成 HTML 预览 | 否 |
+
+### 文档类型自动识别
+
+上传的文件对会先由 `classify_document` 节点用**结构指纹**（表格数量、列结构、顶层段落数、样式集合）分类，决定后续处理策略：
+
+| 模式 | 判断依据 | 处理策略 |
+|------|---------|---------|
+| `copy` | 表格数相等、列结构一致、顶层段落数近似、样式高度重合（即"内容 = 模板 + 填值"） | 直接原样输出内容文件，跳过 LLM |
+| `text_flow` | 双方基本无表格，线性段落流 | 现有 LLM 匹配 → 校验 → 生成 |
+| `table_form` | 内容/模板以表格为主，且内容 ≠ 模板 | 当前走 restyle 路径（表格感知重排为后续规划） |
+
+为什么需要 `copy` 模式：像《实习实践手册》这类表格型模板，用户上传的"内容"往往就是"模板填好值"的同一份文件——格式本就正确。若仍走 LLM 匹配重排，会把封面/顶层段落的 `pStyle` 剥掉、拍平成有损的直接格式，而真正的表格内容又因流水线只遍历顶层段落而漏掉，导致输出"混乱"。`copy` 模式识别出这种退化场景后直接原样返回，从根源上避免。
 
 ---
 
@@ -176,6 +190,7 @@ d:\Layout\
 │   ├── config.py                    # 配置（API Key、模型、路径等）
 │   ├── api/
 │   │   ├── router.py                # API 路由（上传/处理/状态/下载）
+│   │   ├── modify.py                # API 路由（自然语言格式修改）
 │   │   ├── job_manager.py           # 作业管理（内存存储）
 │   │   └── schemas.py               # 请求/响应模型
 │   ├── agent/
@@ -184,6 +199,7 @@ d:\Layout\
 │   │   ├── nodes/
 │   │   │   ├── parse_template.py    # 节点1：解析模板
 │   │   │   ├── analyze_content.py   # 节点2：分析内容
+│   │   │   ├── classify_document.py # 节点2.5：文档类型识别
 │   │   │   ├── match_styles.py      # 节点3：LLM 格式匹配 ★
 │   │   │   ├── verify_formatting.py # 节点4：格式校验
 │   │   │   ├── generate_docx.py     # 节点5：生成文档
@@ -192,14 +208,20 @@ d:\Layout\
 │   │   │   ├── docx_parser.py       # 工具：解析 .docx 模板（含格式模板提取）
 │   │   │   ├── pdf_parser.py        # 工具：解析 PDF 模板
 │   │   │   ├── content_analyzer.py  # 工具：分析内容文档
-│   │   │   ├── docx_generator.py    # 工具：生成 .docx（含格式应用）
+│   │   │   ├── document_classifier.py # 工具：文档类型识别（结构指纹）
+│   │   │   ├── docx_generator.py    # 工具：生成 .docx（含格式应用 + copy 模式）
 │   │   │   ├── schema_validator.py  # 工具：校验映射结果
-│   │   │   └── preview_builder.py   # 工具：生成 HTML 预览
+│   │   │   ├── preview_builder.py   # 工具：生成 HTML 预览
+│   │   │   ├── docx_modifier.py     # 工具：按自然语言指令修改已有 .docx
+│   │   │   ├── docx_snapshot.py     # 工具：读取 .docx 当前格式快照
+│   │   │   └── format_instructor.py # 工具：将自然语言转为格式指令
 │   │   └── prompts/
 │   │       ├── system.py            # System Prompt
-│   │       └── match_styles.py      # 匹配节点的 Prompt 构建
+│   │       ├── match_styles.py      # 匹配节点的 Prompt 构建
+│   │       └── format_instruction.py # 格式修改指令的 Prompt 构建
 │   └── static/
-│       ├── index.html               # 前端页面
+│       ├── index.html               # 前端主页面
+│       ├── modify.html              # 前端格式修改页
 │       ├── style.css
 │       └── app.js
 ├── uploads/                         # 上传文件暂存
@@ -286,7 +308,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ## 九、限制说明
 
 - 模板支持 `.docx`（推荐）和 `.pdf`（只能推断格式，效果较差）
-- 内容文件仅支持 `.docx`
+- 内容文件支持 `.docx` 和 `.md`（Markdown，自动识别标题/列表/引用/代码块及加粗斜体）
 - 不处理需要登录才能访问的网站内容
 - 不支持图片/视频格式的提取与转换
 - 文件大小限制 10MB

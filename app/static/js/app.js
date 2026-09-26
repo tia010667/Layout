@@ -43,6 +43,7 @@
     const previewFrame = $('#preview-frame');
     const btnPreview = $('#btn-preview');
     const btnDownload = $('#btn-download');
+    const btnModify = $('#btn-modify');
     const btnClosePreview = $('#btn-close-preview');
 
     // ============================================================
@@ -323,6 +324,11 @@
     btnDownload.addEventListener('click', () => {
         if (!state.jobId) return;
         window.open(`/api/job/${state.jobId}/download`, '_blank');
+    });
+
+    btnModify.addEventListener('click', () => {
+        if (!state.jobId) return;
+        window.location.href = `/modify?job_id=${state.jobId}`;
     });
 
     // ============================================================

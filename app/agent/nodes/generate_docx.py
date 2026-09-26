@@ -5,17 +5,38 @@ definitions exactly — and adds content paragraphs with assigned styles.
 """
 
 from app.agent.state import AgentState
-from app.agent.tools.docx_generator import generate_docx_from_mapping
+from app.agent.tools.docx_generator import (
+    generate_docx_from_mapping,
+    copy_content_as_output,
+)
 
 
 async def generate_docx(state: AgentState) -> dict:
     """Generate a .docx file using the template as the base document.
 
-    Opens the template .docx, clears its body, and adds content
-    paragraphs with the style names assigned by the LLM. This
-    ensures 100% accurate formatting.
+    Two paths:
+    - "copy": content is the template with values filled in — return the
+      content file verbatim (skip LLM matching entirely).
+    - otherwise: apply the LLM's style mapping to the content using the
+      template's format profiles.
     """
     template_path = state.get("template_path")
+    content_path = state.get("content_path")
+    document_mode = state.get("document_mode")
+
+    if document_mode == "copy":
+        if not template_path or not content_path:
+            return {"error": "No template/content path available", "status": "failed"}
+        try:
+            docx_buffer = copy_content_as_output(template_path, content_path)
+            print(f"  [generate_docx] copy mode → {len(docx_buffer)} bytes (content verbatim)", flush=True)
+            return {"docx_buffer": docx_buffer, "status": "building_preview"}
+        except Exception as e:
+            return {
+                "error": f"[generate_docx] copy path: {type(e).__name__}: {str(e)}",
+                "status": "failed",
+            }
+
     style_mapping = state.get("style_mapping")
     content_structure = state.get("content_structure")
 

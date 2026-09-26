@@ -22,7 +22,7 @@ from app.config import settings
 router = APIRouter()
 
 ALLOWED_TEMPLATE_EXTENSIONS = {".docx", ".pdf"}
-ALLOWED_CONTENT_EXTENSIONS = {".docx"}
+ALLOWED_CONTENT_EXTENSIONS = {".docx", ".md"}
 
 
 @router.get("/config-status", response_model=ConfigStatusResponse)
@@ -57,7 +57,7 @@ async def upload(
     if content_ext not in ALLOWED_CONTENT_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Content must be .docx, got {content_ext}",
+            detail=f"Content must be .docx or .md, got {content_ext}",
         )
 
     # Validate template file size

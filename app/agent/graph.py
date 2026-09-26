@@ -22,12 +22,26 @@ from langgraph.graph import StateGraph, START, END
 from app.agent.state import AgentState
 from app.agent.nodes.parse_template import parse_template
 from app.agent.nodes.analyze_content import analyze_content
+from app.agent.nodes.classify_document import classify_document
 from app.agent.nodes.match_styles import match_styles
 from app.agent.nodes.verify_formatting import verify_formatting
 from app.agent.nodes.generate_docx import generate_docx
 from app.agent.nodes.output import output_node
 from app.api.job_manager import job_manager
 from app.config import settings
+
+
+def route_after_classify(state: AgentState) -> Literal["copy", "restyle"]:
+    """Conditional edge function for the classify_document node.
+
+    - copy → go straight to generate_docx (skip LLM matching/verification)
+    - anything else → existing restyle pipeline (match_styles → …)
+    """
+    mode = state.get("document_mode")
+    if mode == "copy":
+        logger.info("Document mode 'copy' → routing directly to generate_docx")
+        return "copy"
+    return "restyle"
 
 
 def route_after_verify(state: AgentState) -> Literal["generate", "retry", "error"]:
@@ -82,16 +96,30 @@ def build_graph() -> StateGraph:
     # Add all nodes
     workflow.add_node("parse_template", parse_template)
     workflow.add_node("analyze_content", analyze_content)
+    workflow.add_node("classify_document", classify_document)
     workflow.add_node("match_styles", match_styles)
     workflow.add_node("verify_formatting", verify_formatting)
     workflow.add_node("generate_docx", generate_docx)
     workflow.add_node("output", output_node)
     workflow.add_node("handle_error", _handle_error)
 
-    # Linear edges: parse → analyze → match → verify
+    # Linear edges: parse → analyze → classify
     workflow.add_edge(START, "parse_template")
     workflow.add_edge("parse_template", "analyze_content")
-    workflow.add_edge("analyze_content", "match_styles")
+    workflow.add_edge("analyze_content", "classify_document")
+
+    # Conditional branching after classification:
+    #   copy   → straight to generate_docx (skip LLM matching/verification)
+    #   others → existing restyle pipeline
+    workflow.add_conditional_edges(
+        "classify_document",
+        route_after_classify,
+        {
+            "copy": "generate_docx",
+            "restyle": "match_styles",
+        }
+    )
+
     workflow.add_edge("match_styles", "verify_formatting")
 
     # Conditional branching after verification
@@ -166,6 +194,8 @@ def run_agent(job_id: str) -> asyncio.Task:
                 "content_filename": job.content_filename,
                 "template_analysis": None,
                 "content_structure": None,
+                "document_mode": None,
+                "classification": None,
                 "style_mapping": None,
                 "verification_result": None,
                 "retry_count": 0,

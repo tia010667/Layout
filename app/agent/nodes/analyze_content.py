@@ -3,11 +3,14 @@
 import os
 
 from app.agent.state import AgentState
-from app.agent.tools.content_analyzer import analyze_content_docx
+from app.agent.tools.content_analyzer import (
+    analyze_content_docx,
+    analyze_content_md,
+)
 
 
 async def analyze_content(state: AgentState) -> dict:
-    """Analyze the content .docx file and extract paragraph structure.
+    """Analyze the content file (.docx or .md) and extract paragraph structure.
 
     Reads the content file from content_path, extracts all paragraphs
     with their text, current formatting, and semantic roles.
@@ -21,7 +24,11 @@ async def analyze_content(state: AgentState) -> dict:
         }
 
     try:
-        structure = analyze_content_docx(content_path)
+        ext = os.path.splitext(content_path)[1].lower()
+        if ext == ".md":
+            structure = analyze_content_md(content_path)
+        else:
+            structure = analyze_content_docx(content_path)
 
         # Embed the content path so later nodes can read inline formatting
         structure["_content_path"] = content_path

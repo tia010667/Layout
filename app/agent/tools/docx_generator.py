@@ -15,6 +15,7 @@ instead of style definitions (common in Chinese academic documents).
 import io
 import zipfile
 import copy
+from pathlib import Path
 from typing import Any
 
 from lxml import etree
@@ -30,6 +31,29 @@ def _strip_ns(tag: str) -> str:
     return tag.split("}")[-1] if "}" in tag else tag
 
 
+def copy_content_as_output(
+    template_path: str,
+    content_path: str,
+) -> bytes:
+    """Return the content file verbatim for the degenerate "copy" case.
+
+    When content is the template with values filled in, it already carries
+    the correct formatting everywhere (including inside tables). Restyling
+    it would only degrade it — the safest output is the content itself.
+
+    The template is opened only to confirm it is a valid .docx; its bytes
+    are not used. Raises ValueError if the content file is not a valid .docx.
+    """
+    # Validate content is a readable docx before passing it through.
+    with open(content_path, "rb") as f:
+        content_bytes = f.read()
+    with zipfile.ZipFile(io.BytesIO(content_bytes), "r") as z:
+        if "word/document.xml" not in z.namelist():
+            raise ValueError(f"Content file is not a valid .docx: {content_path}")
+
+    return content_bytes
+
+
 def generate_docx_from_mapping(
     template_path: str,
     style_mapping: dict[str, Any],
@@ -40,8 +64,11 @@ def generate_docx_from_mapping(
 
     content_path = content_structure.get("_content_path", "")
 
-    # If we have a content docx, use its body as the base
-    if content_path and content_path != template_path:
+    # If we have a content .docx, use its body as the base (preserves inline
+    # runs, tables, etc.). For .md (or any non-docx content), we have no docx
+    # body to reuse, so rebuild paragraphs from the template directly.
+    content_ext = Path(content_path).suffix.lower() if content_path else ""
+    if content_ext == ".docx" and content_path != template_path:
         try:
             return _generate_from_content(
                 template_path, content_path, style_mapping,
@@ -203,6 +230,32 @@ def _apply_profile_to_paragraph(
             r_elem.insert(0, new_rPr)
 
 
+def _append_run(
+    p_elem,
+    text: str,
+    bold: bool = False,
+    italic: bool = False,
+    underline: bool = False,
+) -> None:
+    """Append a <w:r> with optional inline b/i/u to a paragraph element."""
+    r_elem = etree.SubElement(p_elem, _q("r"))
+
+    if bold or italic or underline:
+        rPr = etree.SubElement(r_elem, _q("rPr"))
+        if bold:
+            etree.SubElement(rPr, _q("b"))
+        if italic:
+            etree.SubElement(rPr, _q("i"))
+        if underline:
+            u = etree.SubElement(rPr, _q("u"))
+            u.set(_q("val"), "single")
+
+    if text:
+        t_elem = etree.SubElement(r_elem, _q("t"))
+        t_elem.text = text
+        t_elem.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+
+
 def _generate_from_content(
     template_path: str,
     content_path: str,
@@ -340,16 +393,25 @@ def _generate_from_template(
 
         p_elem = etree.SubElement(body, _q("p"))
 
-        # Apply format profile
+        # Create runs first (with inline bold/italic/underline) so that
+        # _apply_profile_to_paragraph can apply the profile's run formatting
+        # while preserving the inline semantic marks.
+        runs = p.get("runs") or []
+        if runs:
+            for run in runs:
+                _append_run(
+                    p_elem,
+                    run.get("text", ""),
+                    run.get("bold", False),
+                    run.get("italic", False),
+                    run.get("underline", False),
+                )
+        elif text:
+            _append_run(p_elem, text, False, False, False)
+
+        # Apply format profile (paragraph + run properties)
         if profile:
             _apply_profile_to_paragraph(p_elem, profile, keep_numPr=False)
-
-        if text:
-            r_elem = etree.SubElement(p_elem, _q("r"))
-            # If no rPr was applied by the profile, the run will use defaults
-            t_elem = etree.SubElement(r_elem, _q("t"))
-            t_elem.text = text
-            t_elem.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
 
     if sectPr is not None:
         body.append(sectPr)

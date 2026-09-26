@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FormatAI — 自然语言格式微调</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/modify.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ====== Header ====== -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">
+                <span class="title-icon">✍️</span>
+                FormatAI · 格式微调
+            </h1>
+            <p class="app-subtitle">用自然语言描述格式修改，AI 自动调整文档</p>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">主页</a>
+                <a href="/modify" class="nav-link active">自然语言微调</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ====== Main Content ====== -->
+    <main class="app-main">
+
+        <!-- Step 1: Choose source document -->
+        <section class="card">
+            <div class="card-header">
+                <span class="step-badge">1</span>
+                <h2>选择文档</h2>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="job">从排版结果</button>
+                <button class="tab" data-tab="file">上传 .docx</button>
+            </div>
+
+            <div id="panel-job" class="tab-panel active">
+                <label class="field-label" for="job-id-input">作业 ID（排版或上次微调的 job_id）</label>
+                <input type="text" id="job-id-input" class="text-input" placeholder="例如 a1b2c3d4e5f6">
+                <p class="hint">主页面排版完成后，点「自然语言微调」会自动带上作业 ID。</p>
+            </div>
+
+            <div id="panel-file" class="tab-panel">
+                <div id="file-zone" class="drop-zone drop-zone-sm">
+                    <p class="drop-label">拖拽或点击上传 .docx</p>
+                    <p class="drop-hint">上传要调整格式的文档</p>
+                    <input type="file" id="file-input" accept=".docx" hidden>
+                    <button class="btn-choose" data-for="file-input">选择文件</button>
+                </div>
+                <div id="file-tag" class="file-tag hidden">
+                    <span class="tag-icon">📄</span>
+                    <span class="tag-name"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Instruction -->
+        <section class="card">
+            <div class="card-header">
+                <span class="step-badge">2</span>
+                <h2>描述格式修改</h2>
+            </div>
+
+            <textarea id="instruction" class="instruction-input" rows="4"
+                placeholder="例如：把所有标题改成三号、加粗、居中；正文改成小四号宋体、1.5 倍行距、首行缩进两字符"></textarea>
+
+            <div class="examples">
+                <span class="examples-label">试试：</span>
+                <button class="example-chip">正文行距改成 1.5 倍</button>
+                <button class="example-chip">标题改为三号加粗居中</button>
+                <button class="example-chip">全文首行缩进两字符</button>
+                <button class="example-chip">列表项左缩进一字符</button>
+            </div>
+
+            <button id="btn-apply" class="btn-primary btn-large">✨ 应用格式修改</button>
+
+            <div id="error-banner" class="error-banner hidden">
+                <span class="error-icon">⚠️</span>
+                <div class="error-content">
+                    <p class="error-title">调整失败</p>
+                    <p id="error-message" class="error-message"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Result -->
+        <section id="result-section" class="card hidden">
+            <div class="card-header">
+                <span class="step-badge done">✓</span>
+                <h2>调整完成</h2>
+            </div>
+
+            <p id="summary" class="summary"></p>
+
+            <div class="result-actions">
+                <button id="btn-preview" class="btn-secondary">👁 预览</button>
+                <button id="btn-download" class="btn-primary">⬇ 下载 .docx</button>
+                <button id="btn-continue" class="btn-secondary">🔁 继续调整</button>
+            </div>
+
+            <div id="preview-pane" class="preview-pane hidden">
+                <div class="preview-header">
+                    <span>文档预览</span>
+                    <button id="btn-close-preview" class="btn-close">✕</button>
+                </div>
+                <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="app-footer">
+        <p>FormatAI — 不写新内容，不改原文，只调格式</p>
+    </footer>
+
+    <script src="/static/js/modify.js"></script>
+</body>
+</html>

@@ -19,6 +19,10 @@
                 FormatAI
             </h1>
             <p class="app-subtitle">文档格式 AI 校验与一键排版</p>
+            <nav class="main-nav">
+                <a href="/" class="nav-link active">主页</a>
+                <a href="/modify" class="nav-link">自然语言微调</a>
+            </nav>
         </div>
     </header>
 
@@ -80,8 +84,8 @@
                         </svg>
                     </div>
                     <p class="drop-label">待排版内容文件</p>
-                    <p class="drop-hint">拖拽 .docx 文件到此处</p>
-                    <input type="file" id="content-input" accept=".docx" hidden>
+                    <p class="drop-hint">拖拽 .docx 或 .md 文件到此处</p>
+                    <input type="file" id="content-input" accept=".docx,.md" hidden>
                     <button class="btn-choose" data-for="content-input">或点击选择文件</button>
                 </div>
             </div>
@@ -154,6 +158,9 @@
                 </button>
                 <button id="btn-download" class="btn-primary">
                     ⬇ 下载 .docx
+                </button>
+                <button id="btn-modify" class="btn-secondary">
+                    ✍️ 自然语言微调
                 </button>
             </div>
 

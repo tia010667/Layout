@@ -102,6 +102,36 @@ body {
   border-left: 1px solid rgba(255,255,255,0.2);
 }
 
+.main-nav {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #fff;
+  border-color: var(--gold);
+}
+
+.nav-link.active {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
 /* ============================================================
    Steps Bar
    ============================================================ */

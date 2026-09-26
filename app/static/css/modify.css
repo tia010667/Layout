@@ -1,0 +1,134 @@
+/* ============================================
+   FormatAI — 自然语言格式微调页补充样式
+   （复用 style.css 的设计变量与通用组件）
+   ============================================ */
+
+/* ---- Tabs ---- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: -2px;
+}
+
+.tab:hover { color: var(--navy); }
+
+.tab.active {
+  color: var(--navy);
+  font-weight: 600;
+  border-bottom-color: var(--navy);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---- Source fields ---- */
+.field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: border-color var(--transition);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--navy);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.drop-zone-sm { padding: 28px 20px; }
+
+.file-tag { margin-top: 16px; }
+
+/* ---- Instruction ---- */
+.instruction-input {
+  width: 100%;
+  padding: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--text);
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.7;
+  transition: border-color var(--transition);
+}
+
+.instruction-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: var(--shadow-sm);
+}
+
+.examples {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0 20px;
+}
+
+.examples-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.example-chip {
+  padding: 6px 14px;
+  background: var(--cream-dark);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--navy);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+
+.example-chip:hover {
+  border-color: var(--gold);
+  background: #FFF8E7;
+}
+
+/* ---- Result ---- */
+.summary {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #F9FCF9;
+  border-left: 3px solid var(--green);
+  border-radius: var(--radius-sm);
+}
